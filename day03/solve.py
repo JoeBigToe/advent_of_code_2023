@@ -1,59 +1,34 @@
 path = "."
 
 import math
+
 gears = {}
+m =[]
+parts = []
+
+def symbol_lookup(line, j, number, found):   
+    try:
+        if not(m[line][j].isdigit()) and m[line][j] != ".":
+            found = True
+            if m[line][j] == "*":
+                if f'{line}-{j}' not in gears.keys():
+                    gears.update({f'{line}-{j}':[number]})
+                else:
+                    gears[f'{line}-{j}'].append(number)
+    except IndexError:
+        pass
+
+    return found
 
 def validate(line, lower_band, size):
     found = False
     number = int("".join(m[line][lower_band:lower_band+size]))
     
     for j in range(lower_band -1, lower_band + size + 1):
-        try:
-            if not(m[line-1][j].isdigit()) and m[line-1][j] != ".":
-                found = True
-                if m[line-1][j] == "*":
-                    if f'{line-1}-{j}' not in gears.keys(): #not(gears[f'{line-1}-{j}']):
-                        gears.update({f'{line-1}-{j}':[number]})
-                    else:
-                        gears[f'{line-1}-{j}'].append(number)
-        except IndexError:
-            pass
-    
-    for j in range(lower_band -1, lower_band + size + 1):
-        try:
-            if not(m[line+1][j].isdigit()) and m[line+1][j] != ".":
-                found = True
-                if m[line+1][j] == "*":
-                    if f'{line+1}-{j}' not in gears.keys(): #not(gears[f'{line+1}-{j}']):
-                        gears.update({f'{line+1}-{j}':[number]})
-                    else:
-                        gears[f'{line+1}-{j}'].append(number)
-        except IndexError:
-            pass
-    
-    try:
-        if not(m[line][lower_band-1].isdigit()) and m[line][lower_band-1] != ".":
-            found = True
-            if m[line][lower_band-1] == "*":
-                if f'{line}-{lower_band-1}' not in gears.keys(): #not(gears[f'{line}-{lower_band-1}']):
-                    gears.update({f'{line}-{lower_band-1}':[number]})
-                else:
-                    gears[f'{line}-{lower_band-1}'].append(number)
-                
-    except IndexError:
-        pass
-    
-    try:
-        if not(m[line][lower_band+size].isdigit()) and m[line][lower_band+size] != ".":
-            found = True 
-            if m[line][lower_band+size] == "*":
-                if f'{line}-{lower_band+size}' not in gears.keys(): #not(gears[f'{line}-{lower_band+size}']):
-                    gears.update({f'{line}-{lower_band+size}':[number]})
-                else:
-                    gears[f'{line}-{lower_band+size}'].append(number)
-
-    except IndexError:
-        pass
+        found = symbol_lookup(line-1, j, number, found)
+        found = symbol_lookup(line+1, j, number, found)
+    found = symbol_lookup(line, lower_band-1, number, found)
+    found = symbol_lookup(line, lower_band+size, number, found)
 
     if found:
         return number
@@ -61,8 +36,6 @@ def validate(line, lower_band, size):
         return False
     
 
-m =[]
-parts = []
 with open(f'{path}/puzzle') as fp:
     for line in fp.readlines():
         m.append([c for c in line.strip()])
@@ -91,10 +64,11 @@ with open(f'{path}/puzzle') as fp:
             is_number = False
             size = 0
 
-print(sum(parts))
-s = 0
+print(f'Part1: {sum(parts)}')
+
+sum = 0
 for key in gears.keys():
     if len(gears[key]) > 1:
-        s += math.prod(gears[key])
+        sum += math.prod(gears[key])
 
-print(s)
+print(f'Part2: {sum}')

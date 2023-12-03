@@ -27,7 +27,7 @@ with open(f'{path}/puzzle') as fp:
         if possible:
             sum += game
 
-print(sum)
+print(f'Part1: {sum}')
 
 sum = 0
 with open(f'{path}/puzzle') as fp:
@@ -44,4 +44,4 @@ with open(f'{path}/puzzle') as fp:
                 limits[m.groups(1)[1]] = int(m.groups(1)[0])
         sum += math.prod(limits.values())
 
-print(sum)
+print(f'Part2: {sum}')
